@@ -98,6 +98,66 @@ export function Navbar() {
             </NavigationMenuItem>
 
             <NavigationMenuItem>
+              <NavigationMenuTrigger>Ressources</NavigationMenuTrigger>
+              <NavigationMenuContent>
+                <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2">
+                  <li>
+                    <NavigationMenuLink asChild>
+                      <Link
+                        href="/portfolio"
+                        className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                      >
+                        <div className="text-sm font-medium leading-none">Portfolio</div>
+                        <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                          Découvrez nos réalisations
+                        </p>
+                      </Link>
+                    </NavigationMenuLink>
+                  </li>
+                  <li>
+                    <NavigationMenuLink asChild>
+                      <Link
+                        href="/blog"
+                        className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                      >
+                        <div className="text-sm font-medium leading-none">Blog</div>
+                        <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                          Actualités et ressources
+                        </p>
+                      </Link>
+                    </NavigationMenuLink>
+                  </li>
+                  <li>
+                    <NavigationMenuLink asChild>
+                      <Link
+                        href="/pricing"
+                        className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                      >
+                        <div className="text-sm font-medium leading-none">Tarifs</div>
+                        <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                          Nos offres et prix
+                        </p>
+                      </Link>
+                    </NavigationMenuLink>
+                  </li>
+                  <li>
+                    <NavigationMenuLink asChild>
+                      <Link
+                        href="/faq"
+                        className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                      >
+                        <div className="text-sm font-medium leading-none">FAQ</div>
+                        <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                          Questions fréquentes
+                        </p>
+                      </Link>
+                    </NavigationMenuLink>
+                  </li>
+                </ul>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
+
+            <NavigationMenuItem>
               <Link href="/shop" legacyBehavior passHref>
                 <NavigationMenuLink className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50">
                   Boutique
@@ -184,8 +244,20 @@ export function Navbar() {
                 <Link href="/services" className="text-lg font-medium hover:text-primary transition-colors">
                   Nos Services
                 </Link>
+                <Link href="/portfolio" className="text-lg font-medium hover:text-primary transition-colors">
+                  Portfolio
+                </Link>
+                <Link href="/blog" className="text-lg font-medium hover:text-primary transition-colors">
+                  Blog
+                </Link>
+                <Link href="/pricing" className="text-lg font-medium hover:text-primary transition-colors">
+                  Tarifs
+                </Link>
                 <Link href="/shop" className="text-lg font-medium hover:text-primary transition-colors">
                   Boutique
+                </Link>
+                <Link href="/faq" className="text-lg font-medium hover:text-primary transition-colors">
+                  FAQ
                 </Link>
                 <Link href="/contact" className="text-lg font-medium hover:text-primary transition-colors">
                   Contact

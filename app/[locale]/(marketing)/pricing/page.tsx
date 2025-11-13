@@ -1,155 +1,340 @@
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Check } from 'lucide-react'
+"use client"
 
-const plans = [
-  {
-    name: 'Free',
-    price: '$0',
-    description: 'Perfect for trying out our platform',
-    features: [
-      'Up to 3 team members',
-      '5 projects',
-      'Basic analytics',
-      'Community support',
-      '1 GB storage',
-    ],
-    cta: 'Get Started',
-    highlighted: false,
-  },
-  {
-    name: 'Starter',
-    price: '$29',
-    description: 'Great for small teams',
-    features: [
-      'Up to 10 team members',
-      'Unlimited projects',
-      'Advanced analytics',
-      'Priority support',
-      '10 GB storage',
-      'Custom domain',
-      'API access',
-    ],
-    cta: 'Start Free Trial',
-    highlighted: false,
-  },
-  {
-    name: 'Pro',
-    price: '$99',
-    description: 'For growing businesses',
-    features: [
-      'Up to 50 team members',
-      'Unlimited projects',
-      'Advanced analytics + AI insights',
-      '24/7 Priority support',
-      '100 GB storage',
-      'Custom domain',
-      'Full API access',
-      'Advanced integrations',
-      'White label options',
-    ],
-    cta: 'Start Free Trial',
-    highlighted: true,
-  },
-  {
-    name: 'Enterprise',
-    price: 'Custom',
-    description: 'For large organizations',
-    features: [
-      'Unlimited team members',
-      'Unlimited projects',
-      'Enterprise analytics',
-      'Dedicated support manager',
-      'Unlimited storage',
-      'Custom integrations',
-      'SLA guarantee',
-      'Advanced security',
-      'On-premise deployment',
-      'Training & onboarding',
-    ],
-    cta: 'Contact Sales',
-    highlighted: false,
-  },
-]
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import Link from 'next/link'
+import { motion } from 'framer-motion'
+import { Chatbot } from '@/components/chatbot/chatbot'
+import { Check, X, Sparkles } from 'lucide-react'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+
+const fadeIn = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0 }
+}
+
+const stagger = {
+  visible: {
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+}
+
+const pricingPlans = {
+  monthly: [
+    {
+      name: 'Starter',
+      price: '499',
+      description: 'Parfait pour démarrer votre présence en ligne',
+      features: [
+        { name: 'Site vitrine 5 pages', included: true },
+        { name: 'Design responsive', included: true },
+        { name: 'SEO de base', included: true },
+        { name: 'Formulaire de contact', included: true },
+        { name: 'Support 3 mois', included: true },
+        { name: 'E-commerce', included: false },
+        { name: 'Blog', included: false },
+        { name: 'Analytics avancé', included: false }
+      ],
+      popular: false
+    },
+    {
+      name: 'Professional',
+      price: '1299',
+      description: 'Pour les entreprises en croissance',
+      features: [
+        { name: 'Site sur mesure illimité', included: true },
+        { name: 'Design premium', included: true },
+        { name: 'SEO avancé', included: true },
+        { name: 'Formulaires avancés', included: true },
+        { name: 'Support 6 mois', included: true },
+        { name: 'E-commerce complet', included: true },
+        { name: 'Blog intégré', included: true },
+        { name: 'Analytics avancé', included: false }
+      ],
+      popular: true
+    },
+    {
+      name: 'Enterprise',
+      price: '2999',
+      description: 'Solutions sur mesure pour grandes entreprises',
+      features: [
+        { name: 'Application web complète', included: true },
+        { name: 'Design système complet', included: true },
+        { name: 'SEO & Marketing', included: true },
+        { name: 'Fonctionnalités illimitées', included: true },
+        { name: 'Support 12 mois', included: true },
+        { name: 'E-commerce avancé', included: true },
+        { name: 'Blog & CMS', included: true },
+        { name: 'Analytics & BI', included: true }
+      ],
+      popular: false
+    }
+  ],
+  annual: [
+    {
+      name: 'Starter',
+      price: '4990',
+      description: 'Parfait pour démarrer votre présence en ligne',
+      features: [
+        { name: 'Site vitrine 5 pages', included: true },
+        { name: 'Design responsive', included: true },
+        { name: 'SEO de base', included: true },
+        { name: 'Formulaire de contact', included: true },
+        { name: 'Support 3 mois', included: true },
+        { name: 'E-commerce', included: false },
+        { name: 'Blog', included: false },
+        { name: 'Analytics avancé', included: false }
+      ],
+      popular: false,
+      savings: '1000'
+    },
+    {
+      name: 'Professional',
+      price: '12990',
+      description: 'Pour les entreprises en croissance',
+      features: [
+        { name: 'Site sur mesure illimité', included: true },
+        { name: 'Design premium', included: true },
+        { name: 'SEO avancé', included: true },
+        { name: 'Formulaires avancés', included: true },
+        { name: 'Support 6 mois', included: true },
+        { name: 'E-commerce complet', included: true },
+        { name: 'Blog intégré', included: true },
+        { name: 'Analytics avancé', included: false }
+      ],
+      popular: true,
+      savings: '2600'
+    },
+    {
+      name: 'Enterprise',
+      price: '29990',
+      description: 'Solutions sur mesure pour grandes entreprises',
+      features: [
+        { name: 'Application web complète', included: true },
+        { name: 'Design système complet', included: true },
+        { name: 'SEO & Marketing', included: true },
+        { name: 'Fonctionnalités illimitées', included: true },
+        { name: 'Support 12 mois', included: true },
+        { name: 'E-commerce avancé', included: true },
+        { name: 'Blog & CMS', included: true },
+        { name: 'Analytics & BI', included: true }
+      ],
+      popular: false,
+      savings: '6000'
+    }
+  ]
+}
 
 export default function PricingPage() {
   return (
-    <div className="container py-20">
-      <div className="mx-auto max-w-3xl text-center">
-        <Badge className="mb-4">Pricing</Badge>
-        <h1 className="mb-4 text-4xl font-bold tracking-tight sm:text-5xl">
-          Simple, transparent pricing
-        </h1>
-        <p className="text-xl text-muted-foreground">
-          Choose the perfect plan for your needs. Always know what you&apos;ll pay.
-        </p>
-      </div>
-
-      <div className="mt-16 grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-        {plans.map((plan) => (
-          <Card
-            key={plan.name}
-            className={plan.highlighted ? 'border-primary shadow-lg' : ''}
+    <div className="flex min-h-screen flex-col">
+      {/* Hero Section */}
+      <section className="container py-20">
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={stagger}
+          className="text-center mb-12"
+        >
+          <motion.div variants={fadeIn}>
+            <Badge className="mb-4">Tarifs</Badge>
+          </motion.div>
+          <motion.h1
+            variants={fadeIn}
+            className="mb-6 text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl"
           >
-            {plan.highlighted && (
-              <div className="rounded-t-lg bg-primary px-4 py-2 text-center text-sm font-medium text-primary-foreground">
-                Most Popular
-              </div>
-            )}
-            <CardHeader>
-              <CardTitle className="text-2xl">{plan.name}</CardTitle>
-              <CardDescription>{plan.description}</CardDescription>
-              <div className="mt-4">
-                <span className="text-4xl font-bold">{plan.price}</span>
-                {plan.price !== 'Custom' && (
-                  <span className="text-muted-foreground">/month</span>
-                )}
-              </div>
-            </CardHeader>
-            <CardContent>
-              <Button
-                className="w-full"
-                variant={plan.highlighted ? 'default' : 'outline'}
-              >
-                {plan.cta}
-              </Button>
-              <ul className="mt-6 space-y-3">
-                {plan.features.map((feature) => (
-                  <li key={feature} className="flex items-start gap-3">
-                    <Check className="h-5 w-5 shrink-0 text-primary" />
-                    <span className="text-sm text-muted-foreground">{feature}</span>
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+            Des tarifs{' '}
+            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              transparents
+            </span>
+          </motion.h1>
+          <motion.p
+            variants={fadeIn}
+            className="mb-8 text-xl text-muted-foreground max-w-3xl mx-auto"
+          >
+            Choisissez le plan qui correspond à vos besoins. Tous nos plans incluent un support dédié et une garantie satisfait ou remboursé.
+          </motion.p>
+        </motion.div>
+      </section>
 
-      <div className="mt-20 text-center">
-        <h2 className="text-2xl font-bold">Frequently asked questions</h2>
-        <div className="mx-auto mt-8 max-w-2xl space-y-6 text-left">
-          <div>
-            <h3 className="font-semibold">Can I change plans later?</h3>
-            <p className="mt-2 text-muted-foreground">
-              Yes! You can upgrade or downgrade your plan at any time. Changes will be reflected in your next billing cycle.
-            </p>
-          </div>
-          <div>
-            <h3 className="font-semibold">What payment methods do you accept?</h3>
-            <p className="mt-2 text-muted-foreground">
-              We accept all major credit cards, PayPal, and bank transfers for Enterprise plans.
-            </p>
-          </div>
-          <div>
-            <h3 className="font-semibold">Is there a free trial?</h3>
-            <p className="mt-2 text-muted-foreground">
-              Yes! All paid plans come with a 14-day free trial. No credit card required.
-            </p>
+      {/* Pricing Cards */}
+      <section className="container pb-20">
+        <Tabs defaultValue="monthly" className="w-full">
+          <TabsList className="grid w-full md:w-[400px] mx-auto grid-cols-2 mb-12">
+            <TabsTrigger value="monthly">Mensuel</TabsTrigger>
+            <TabsTrigger value="annual">
+              Annuel
+              <Badge variant="secondary" className="ml-2">-17%</Badge>
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="monthly">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={stagger}
+              className="grid gap-8 md:grid-cols-3 max-w-6xl mx-auto"
+            >
+              {pricingPlans.monthly.map((plan) => (
+                <motion.div key={plan.name} variants={fadeIn}>
+                  <Card className={`h-full flex flex-col ${plan.popular ? 'border-primary border-2 shadow-2xl scale-105' : ''}`}>
+                    {plan.popular && (
+                      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white text-center py-2 rounded-t-lg font-semibold flex items-center justify-center gap-2">
+                        <Sparkles className="h-4 w-4" />
+                        Plus populaire
+                      </div>
+                    )}
+                    <CardHeader className={plan.popular ? 'pt-6' : ''}>
+                      <CardTitle className="text-2xl">{plan.name}</CardTitle>
+                      <CardDescription>{plan.description}</CardDescription>
+                      <div className="mt-4">
+                        <span className="text-5xl font-bold">{plan.price}€</span>
+                        <span className="text-muted-foreground">/mois</span>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="flex-1">
+                      <ul className="space-y-3">
+                        {plan.features.map((feature) => (
+                          <li key={feature.name} className="flex items-start gap-2">
+                            {feature.included ? (
+                              <Check className="h-5 w-5 text-green-600 shrink-0 mt-0.5" />
+                            ) : (
+                              <X className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
+                            )}
+                            <span className={feature.included ? '' : 'text-muted-foreground'}>
+                              {feature.name}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    </CardContent>
+                    <CardFooter>
+                      <Button
+                        className="w-full"
+                        variant={plan.popular ? 'default' : 'outline'}
+                        size="lg"
+                        asChild
+                      >
+                        <Link href="/contact">
+                          {plan.popular ? 'Commencer maintenant' : 'Demander un devis'}
+                        </Link>
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                </motion.div>
+              ))}
+            </motion.div>
+          </TabsContent>
+
+          <TabsContent value="annual">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={stagger}
+              className="grid gap-8 md:grid-cols-3 max-w-6xl mx-auto"
+            >
+              {pricingPlans.annual.map((plan) => (
+                <motion.div key={plan.name} variants={fadeIn}>
+                  <Card className={`h-full flex flex-col ${plan.popular ? 'border-primary border-2 shadow-2xl scale-105' : ''}`}>
+                    {plan.popular && (
+                      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white text-center py-2 rounded-t-lg font-semibold flex items-center justify-center gap-2">
+                        <Sparkles className="h-4 w-4" />
+                        Plus populaire
+                      </div>
+                    )}
+                    <CardHeader className={plan.popular ? 'pt-6' : ''}>
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <CardTitle className="text-2xl">{plan.name}</CardTitle>
+                          <CardDescription>{plan.description}</CardDescription>
+                        </div>
+                        {plan.savings && (
+                          <Badge variant="secondary" className="bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-100">
+                            Économisez {plan.savings}€
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="mt-4">
+                        <span className="text-5xl font-bold">{plan.price}€</span>
+                        <span className="text-muted-foreground">/an</span>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="flex-1">
+                      <ul className="space-y-3">
+                        {plan.features.map((feature) => (
+                          <li key={feature.name} className="flex items-start gap-2">
+                            {feature.included ? (
+                              <Check className="h-5 w-5 text-green-600 shrink-0 mt-0.5" />
+                            ) : (
+                              <X className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
+                            )}
+                            <span className={feature.included ? '' : 'text-muted-foreground'}>
+                              {feature.name}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    </CardContent>
+                    <CardFooter>
+                      <Button
+                        className="w-full"
+                        variant={plan.popular ? 'default' : 'outline'}
+                        size="lg"
+                        asChild
+                      >
+                        <Link href="/contact">
+                          {plan.popular ? 'Commencer maintenant' : 'Demander un devis'}
+                        </Link>
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                </motion.div>
+              ))}
+            </motion.div>
+          </TabsContent>
+        </Tabs>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="bg-muted/50 py-20">
+        <div className="container max-w-3xl">
+          <h2 className="text-3xl font-bold mb-12 text-center">Questions fréquentes</h2>
+          <div className="space-y-6">
+            {[
+              {
+                q: 'Puis-je changer de plan plus tard ?',
+                a: 'Oui, vous pouvez upgrader ou downgrader votre plan à tout moment. Les changements prennent effet immédiatement.'
+              },
+              {
+                q: 'Y a-t-il des frais cachés ?',
+                a: 'Non, tous nos prix sont transparents. Le prix affiché est le prix final, aucun frais caché.'
+              },
+              {
+                q: 'Proposez-vous des forfaits sur mesure ?',
+                a: 'Oui, pour les projets spécifiques, nous créons des devis personnalisés adaptés à vos besoins.'
+              },
+              {
+                q: 'Quels moyens de paiement acceptez-vous ?',
+                a: 'Nous acceptons les cartes bancaires, PayPal, virements bancaires et paiements en plusieurs fois.'
+              }
+            ].map((faq, i) => (
+              <Card key={i}>
+                <CardHeader>
+                  <CardTitle className="text-lg">{faq.q}</CardTitle>
+                  <CardDescription>{faq.a}</CardDescription>
+                </CardHeader>
+              </Card>
+            ))}
           </div>
         </div>
-      </div>
+      </section>
+
+      <Chatbot />
     </div>
   )
 }
