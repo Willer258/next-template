@@ -1,0 +1,19 @@
+{
+  "title": "Dashboard",
+  "overview": {
+    "title": "Overview",
+    "totalUsers": "Total Users",
+    "totalOrganizations": "Total Organizations",
+    "totalEvents": "Total Events",
+    "revenue": "Revenue"
+  },
+  "menu": {
+    "overview": "Overview",
+    "analytics": "Analytics",
+    "users": "Users",
+    "organizations": "Organizations",
+    "settings": "Settings",
+    "billing": "Billing",
+    "logs": "Logs"
+  }
+}

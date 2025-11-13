@@ -1,0 +1,19 @@
+{
+  "title": "Tableau de bord",
+  "overview": {
+    "title": "Vue d'ensemble",
+    "totalUsers": "Utilisateurs totaux",
+    "totalOrganizations": "Organisations totales",
+    "totalEvents": "Événements totaux",
+    "revenue": "Revenu"
+  },
+  "menu": {
+    "overview": "Vue d'ensemble",
+    "analytics": "Analytique",
+    "users": "Utilisateurs",
+    "organizations": "Organisations",
+    "settings": "Paramètres",
+    "billing": "Facturation",
+    "logs": "Journaux"
+  }
+}
