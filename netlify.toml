@@ -1,0 +1,16 @@
+[build]
+  command = "pnpm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "20"
+  NEXT_TELEMETRY_DISABLED = "1"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# Redirect all requests to Next.js
+[[redirects]]
+  from = "/*"
+  to = "/"
+  status = 200
