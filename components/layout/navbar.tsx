@@ -25,6 +25,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { useState } from 'react'
 import { ThemeToggle } from './theme-toggle'
+import { LanguageSwitcher } from './language-switcher'
 
 export function Navbar() {
   const [cartItems, setCartItems] = useState(3)
@@ -198,12 +199,19 @@ export function Navbar() {
             </Link>
           </motion.div>
 
+          <LanguageSwitcher />
           <ThemeToggle />
 
-          {/* User Menu */}
+          {/* Login/User Menu */}
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <Button asChild variant="default" size="sm" className="hidden md:inline-flex">
+              <Link href="/login">Se connecter</Link>
+            </Button>
+          </motion.div>
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="md:hidden">
                 <Button variant="ghost" size="icon">
                   <User className="h-5 w-5" />
                 </Button>
@@ -213,16 +221,15 @@ export function Navbar() {
               <DropdownMenuLabel>Mon Compte</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem>
-                <Link href="/profile">Profil</Link>
+                <Link href="/login">Se connecter</Link>
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <Link href="/orders">Mes Commandes</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Link href="/settings">Paramètres</Link>
+                <Link href="/register">S inscrire</Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Se déconnecter</DropdownMenuItem>
+              <DropdownMenuItem>
+                <Link href="/dashboard">Dashboard</Link>
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
