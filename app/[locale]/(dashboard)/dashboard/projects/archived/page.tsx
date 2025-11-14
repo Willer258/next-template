@@ -8,7 +8,6 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Progress } from '@/components/ui/progress'
 import { Folder, Search, Users, Calendar as CalendarIcon, ArrowLeft, Archive, RotateCcw } from 'lucide-react'
-import { motion } from 'framer-motion'
 
 interface Project {
   id: number
@@ -162,12 +161,10 @@ export default function ArchivedProjectsPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {filteredProjects.map((project, index) => (
-          <motion.div
+        {filteredProjects.map((project) => (
+          <div
             key={project.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
+            className="animate-in fade-in slide-in-from-bottom-4 duration-500"
           >
             <Card className="hover:shadow-lg transition-shadow border-gray-500/20">
               <CardHeader>
@@ -220,7 +217,7 @@ export default function ArchivedProjectsPage() {
                 </div>
               </CardContent>
             </Card>
-          </motion.div>
+          </div>
         ))}
       </div>
     </div>

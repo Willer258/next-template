@@ -11,7 +11,6 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { ShoppingBag, Plus, Search, Package, TrendingUp, AlertTriangle, Edit, Trash2, Image as ImageIcon } from 'lucide-react'
-import { motion } from 'framer-motion'
 
 interface Product {
   id: number
@@ -314,13 +313,10 @@ export default function ProductsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredProducts.map((product, index) => (
-                <motion.tr
+              {filteredProducts.map((product) => (
+                <TableRow
                   key={product.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                  className="border-b hover:bg-accent/50 transition-colors"
+                  className="hover:bg-accent/50 transition-colors animate-in fade-in duration-300"
                 >
                   <TableCell>
                     <div className="flex items-center gap-3">
@@ -372,7 +368,7 @@ export default function ProductsPage() {
                       </Button>
                     </div>
                   </TableCell>
-                </motion.tr>
+                </TableRow>
               ))}
             </TableBody>
           </Table>

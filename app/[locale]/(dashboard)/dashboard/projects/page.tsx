@@ -12,7 +12,6 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Folder, Plus, Search, Users, Calendar as CalendarIcon, TrendingUp, Eye } from 'lucide-react'
-import { motion } from 'framer-motion'
 
 interface Project {
   id: number
@@ -304,12 +303,10 @@ export default function ProjectsPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {filteredProjects.map((project, index) => (
-          <motion.div
+        {filteredProjects.map((project) => (
+          <div
             key={project.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
+            className="animate-in fade-in slide-in-from-bottom-4 duration-500"
           >
             <Card className="hover:shadow-lg transition-shadow">
               <CardHeader>
@@ -367,7 +364,7 @@ export default function ProjectsPage() {
                 </div>
               </CardContent>
             </Card>
-          </motion.div>
+          </div>
         ))}
       </div>
     </div>

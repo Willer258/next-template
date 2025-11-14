@@ -8,7 +8,6 @@ import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { FileText, Search, AlertCircle, Info, AlertTriangle, CheckCircle, Download, Filter } from 'lucide-react'
-import { motion } from 'framer-motion'
 
 interface Log {
   id: number
@@ -289,16 +288,13 @@ export default function LogsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredLogs.map((log, index) => {
+              {filteredLogs.map((log) => {
                 const logInfo = getLogBadge(log.level)
                 const LogIcon = logInfo.icon
                 return (
-                  <motion.tr
+                  <TableRow
                     key={log.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.03 }}
-                    className="border-b hover:bg-accent/50 transition-colors"
+                    className="hover:bg-accent/50 transition-colors animate-in fade-in duration-300"
                   >
                     <TableCell>
                       <code className="text-xs">{log.timestamp}</code>
@@ -329,7 +325,7 @@ export default function LogsPage() {
                         <span className="text-xs text-muted-foreground">-</span>
                       )}
                     </TableCell>
-                  </motion.tr>
+                  </TableRow>
                 )
               })}
             </TableBody>

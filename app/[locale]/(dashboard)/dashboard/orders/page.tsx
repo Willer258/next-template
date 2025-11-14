@@ -8,7 +8,6 @@ import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { FileText, Search, Package, Clock, CheckCircle, XCircle, Eye, Download, TrendingUp } from 'lucide-react'
-import { motion } from 'framer-motion'
 
 interface Order {
   id: string
@@ -251,16 +250,13 @@ export default function OrdersPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredOrders.map((order, index) => {
+              {filteredOrders.map((order) => {
                 const statusInfo = getStatusBadge(order.status)
                 const StatusIcon = statusInfo.icon
                 return (
-                  <motion.tr
+                  <TableRow
                     key={order.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.05 }}
-                    className="border-b hover:bg-accent/50 transition-colors"
+                    className="hover:bg-accent/50 transition-colors animate-in fade-in duration-300"
                   >
                     <TableCell>
                       <div className="flex items-center gap-2">
@@ -365,7 +361,7 @@ export default function OrdersPage() {
                         </DialogContent>
                       </Dialog>
                     </TableCell>
-                  </motion.tr>
+                  </TableRow>
                 )
               })}
             </TableBody>

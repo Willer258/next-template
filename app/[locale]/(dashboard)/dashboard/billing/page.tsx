@@ -10,7 +10,6 @@ import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { CreditCard, Download, Plus, CheckCircle, XCircle, Clock, TrendingUp, Wallet } from 'lucide-react'
-import { motion } from 'framer-motion'
 import { Progress } from '@/components/ui/progress'
 
 interface Invoice {
@@ -278,12 +277,10 @@ export default function BillingPage() {
             </div>
           </CardHeader>
           <CardContent className="space-y-3">
-            {paymentMethods.map((method, index) => (
-              <motion.div
+            {paymentMethods.map((method) => (
+              <div
                 key={method.id}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.1 }}
+                className="animate-in fade-in slide-in-from-left-3 duration-500"
               >
                 <Card>
                   <CardContent className="p-4">
@@ -318,7 +315,7 @@ export default function BillingPage() {
                     </div>
                   </CardContent>
                 </Card>
-              </motion.div>
+              </div>
             ))}
           </CardContent>
         </Card>
@@ -351,16 +348,13 @@ export default function BillingPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {invoices.map((invoice, index) => {
+              {invoices.map((invoice) => {
                 const statusInfo = getStatusBadge(invoice.status)
                 const StatusIcon = statusInfo.icon
                 return (
-                  <motion.tr
+                  <TableRow
                     key={invoice.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.05 }}
-                    className="border-b hover:bg-accent/50 transition-colors"
+                    className="hover:bg-accent/50 transition-colors animate-in fade-in duration-300"
                   >
                     <TableCell>
                       <code className="text-xs font-semibold">{invoice.id}</code>
@@ -399,7 +393,7 @@ export default function BillingPage() {
                         Download
                       </Button>
                     </TableCell>
-                  </motion.tr>
+                  </TableRow>
                 )
               })}
             </TableBody>

@@ -11,7 +11,6 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Calendar as CalendarIcon, Clock, Plus, Video, Users, MapPin } from 'lucide-react'
-import { motion } from 'framer-motion'
 
 interface Event {
   id: number
@@ -169,12 +168,10 @@ export default function CalendarPage() {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {todaysEvents.map((event, index) => (
-                    <motion.div
+                  {todaysEvents.map((event) => (
+                    <div
                       key={event.id}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.1 }}
+                      className="animate-in fade-in slide-in-from-left-5 duration-500"
                     >
                       <Card>
                         <CardContent className="p-4">
@@ -217,7 +214,7 @@ export default function CalendarPage() {
                           </div>
                         </CardContent>
                       </Card>
-                    </motion.div>
+                    </div>
                   ))}
                 </div>
               )}

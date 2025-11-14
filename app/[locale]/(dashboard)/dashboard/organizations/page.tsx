@@ -11,7 +11,6 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Building2, Plus, Search, Users, MapPin, Mail, Phone, Globe, Edit, Trash2 } from 'lucide-react'
-import { motion } from 'framer-motion'
 
 interface Organization {
   id: number
@@ -285,13 +284,10 @@ export default function OrganizationsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredOrganizations.map((org, index) => (
-                <motion.tr
+              {filteredOrganizations.map((org) => (
+                <TableRow
                   key={org.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                  className="border-b hover:bg-accent/50 transition-colors"
+                  className="hover:bg-accent/50 transition-colors animate-in fade-in duration-300"
                 >
                   <TableCell>
                     <div className="flex items-center gap-3">
@@ -340,7 +336,7 @@ export default function OrganizationsPage() {
                       </Button>
                     </div>
                   </TableCell>
-                </motion.tr>
+                </TableRow>
               ))}
             </TableBody>
           </Table>
