@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { NextIntlClientProvider } from 'next-intl'
 import { getMessages } from 'next-intl/server'
-import { ThemeProvider } from '@/components/theme-provider'
+import { ThemeProvider } from '@/hooks/use-theme'
 import '../globals.css'
 
 export const metadata: Metadata = {
@@ -23,12 +23,7 @@ export default async function RootLayout({
     <html lang={locale} suppressHydrationWarning>
       <body className="font-sans antialiased">
         <NextIntlClientProvider messages={messages}>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
+          <ThemeProvider defaultTheme="default" defaultMode="light" storageKey="ui-theme">
             {children}
           </ThemeProvider>
         </NextIntlClientProvider>
