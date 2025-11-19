@@ -198,3 +198,177 @@ model Event {
   @@index([createdAt])
   @@map("events")
 }
+
+// E-commerce Models
+
+// Product Categories
+model Category {
+  id          String    @id @default(cuid())
+  name        String
+  slug        String    @unique
+  description String?
+  image       String?
+  parentId    String?   @map("parent_id")
+  isActive    Boolean   @default(true) @map("is_active")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  parent   Category?  @relation("CategoryToCategory", fields: [parentId], references: [id])
+  children Category[] @relation("CategoryToCategory")
+  products Product[]
+
+  @@map("categories")
+}
+
+// Products
+model Product {
+  id                String   @id @default(cuid())
+  name              String
+  description       String   @db.Text
+  sku               String   @unique
+  price             Float
+  compareAtPrice    Float?   @map("compare_at_price")
+  stock             Int      @default(0)
+  lowStockThreshold Int      @default(10) @map("low_stock_threshold")
+  category          String
+  categoryId        String?  @map("category_id")
+  brand             String?
+  tags              String[] @default([])
+  images            Json     @default("[]") // Array of image objects
+  specifications    Json?    // Key-value pairs
+  isActive          Boolean  @default(true) @map("is_active")
+  isFeatured        Boolean  @default(false) @map("is_featured")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  categoryRel Category?   @relation(fields: [categoryId], references: [id])
+  orderItems  OrderItem[]
+  cartItems   CartItem[]
+
+  @@index([category])
+  @@index([sku])
+  @@index([isActive])
+  @@index([isFeatured])
+  @@map("products")
+}
+
+// Shopping Cart
+model Cart {
+  id        String   @id @default(cuid())
+  userId    String?  @map("user_id")
+  sessionId String?  @unique @map("session_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  items CartItem[]
+
+  @@map("carts")
+}
+
+// Cart Items
+model CartItem {
+  id        String   @id @default(cuid())
+  cartId    String   @map("cart_id")
+  productId String   @map("product_id")
+  quantity  Int      @default(1)
+  price     Float
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  cart    Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+
+  @@unique([cartId, productId])
+  @@map("cart_items")
+}
+
+// Orders
+model Order {
+  id              String      @id @default(cuid())
+  orderNumber     String      @unique @map("order_number")
+  userId          String?     @map("user_id")
+  customerEmail   String      @map("customer_email")
+  customerName    String      @map("customer_name")
+  status          OrderStatus @default(PENDING)
+  paymentStatus   PaymentStatus @default(PENDING) @map("payment_status")
+  paymentMethod   String      @map("payment_method")
+  subtotal        Float
+  tax             Float       @default(0)
+  shipping        Float       @default(0)
+  discount        Float       @default(0)
+  total           Float
+  shippingAddress Json        @map("shipping_address")
+  billingAddress  Json        @map("billing_address")
+  notes           String?
+  createdAt       DateTime    @default(now()) @map("created_at")
+  updatedAt       DateTime    @updatedAt @map("updated_at")
+
+  items OrderItem[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([orderNumber])
+  @@index([createdAt])
+  @@map("orders")
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+// Order Items
+model OrderItem {
+  id        String   @id @default(cuid())
+  orderId   String   @map("order_id")
+  productId String   @map("product_id")
+  quantity  Int
+  price     Float
+  total     Float
+  createdAt DateTime @default(now()) @map("created_at")
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+
+  @@map("order_items")
+}
+
+// Inventory Movements (for tracking stock changes)
+model InventoryMovement {
+  id          String         @id @default(cuid())
+  productId   String         @map("product_id")
+  productSku  String         @map("product_sku")
+  type        MovementType
+  quantity    Int
+  reference   String?        // Order number, supplier invoice, etc.
+  notes       String?
+  createdBy   String?        @map("created_by")
+  createdAt   DateTime       @default(now()) @map("created_at")
+
+  @@index([productId])
+  @@index([productSku])
+  @@index([type])
+  @@index([createdAt])
+  @@map("inventory_movements")
+}
+
+enum MovementType {
+  PURCHASE      // Stock received from supplier
+  SALE          // Stock sold to customer
+  ADJUSTMENT    // Manual adjustment
+  RETURN        // Customer return
+  DAMAGE        // Damaged goods
+  TRANSFER      // Transfer between warehouses
+}

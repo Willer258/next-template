@@ -1,184 +1,82 @@
-import { NextRequest, NextResponse } from 'next/server'
-import type { ApiResponse, Product, CreateProductRequest, PaginatedResponse, ProductFilters } from '@/types/api'
+import { NextRequest } from 'next/server'
+import { ProductService } from '@/lib/services/product.service'
+import { ApiResponse } from '@/lib/api/response'
+import { handleApiError } from '@/lib/utils/error-handler'
+import { parseQueryParams } from '@/lib/validators/common.validators'
+import {
+  createProductSchema,
+  productFiltersSchema,
+  type CreateProductInput,
+} from '@/lib/validators/product.validators'
 
-// In-memory storage (replace with database in production)
-let products: Product[] = [
-  {
-    id: '1',
-    name: 'Wireless Headphones Pro',
-    description: 'Premium wireless headphones with active noise cancellation',
-    sku: 'WHP-001',
-    price: 129.99,
-    compareAtPrice: 199.99,
-    category: 'Electronics',
-    subcategory: 'Audio',
-    brand: 'TechCorp',
-    images: ['/products/headphones-1.jpg'],
-    stock: 45,
-    lowStockThreshold: 10,
-    status: 'active',
-    tags: ['wireless', 'noise-cancellation', 'premium'],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: '2',
-    name: 'Smart Watch Ultra',
-    description: 'Advanced smartwatch with health tracking',
-    sku: 'SWU-002',
-    price: 399.99,
-    category: 'Electronics',
-    subcategory: 'Wearables',
-    brand: 'TechCorp',
-    images: ['/products/watch-1.jpg'],
-    stock: 12,
-    lowStockThreshold: 15,
-    status: 'active',
-    tags: ['smartwatch', 'health', 'fitness'],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-]
+const productService = new ProductService()
 
-// GET /api/products - List all products with pagination and filters
+/**
+ * GET /api/products - List all products with pagination and filters
+ *
+ * Query Parameters:
+ * - page: Page number (default: 1)
+ * - limit: Items per page (default: 10, max: 100)
+ * - category: Filter by category
+ * - brand: Filter by brand
+ * - minPrice: Minimum price filter
+ * - maxPrice: Maximum price filter
+ * - inStock: Filter in-stock products (true/false)
+ * - isActive: Filter active products (true/false)
+ * - isFeatured: Filter featured products (true/false)
+ * - search: Search in name, description, SKU
+ * - sortBy: Field to sort by
+ * - sortOrder: Sort order (asc/desc)
+ * - tags: Filter by tags (array or single value)
+ */
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
+    // Parse and validate query parameters
+    const filters = parseQueryParams(productFiltersSchema, request.url)
 
-    // Pagination
-    const page = parseInt(searchParams.get('page') || '1')
-    const limit = parseInt(searchParams.get('limit') || '10')
+    // Get products from service
+    const { products, pagination } = await productService.getProducts(filters)
 
-    // Filters
-    const category = searchParams.get('category')
-    const subcategory = searchParams.get('subcategory')
-    const brand = searchParams.get('brand')
-    const minPrice = searchParams.get('minPrice')
-    const maxPrice = searchParams.get('maxPrice')
-    const inStock = searchParams.get('inStock')
-    const search = searchParams.get('search')
-    const status = searchParams.get('status')
-
-    let filteredProducts = [...products]
-
-    // Apply filters
-    if (category) {
-      filteredProducts = filteredProducts.filter(p => p.category === category)
-    }
-    if (subcategory) {
-      filteredProducts = filteredProducts.filter(p => p.subcategory === subcategory)
-    }
-    if (brand) {
-      filteredProducts = filteredProducts.filter(p => p.brand === brand)
-    }
-    if (minPrice) {
-      filteredProducts = filteredProducts.filter(p => p.price >= parseFloat(minPrice))
-    }
-    if (maxPrice) {
-      filteredProducts = filteredProducts.filter(p => p.price <= parseFloat(maxPrice))
-    }
-    if (inStock === 'true') {
-      filteredProducts = filteredProducts.filter(p => p.stock > 0)
-    }
-    if (status) {
-      filteredProducts = filteredProducts.filter(p => p.status === status)
-    }
-    if (search) {
-      const searchLower = search.toLowerCase()
-      filteredProducts = filteredProducts.filter(p =>
-        p.name.toLowerCase().includes(searchLower) ||
-        p.description.toLowerCase().includes(searchLower) ||
-        p.sku.toLowerCase().includes(searchLower)
-      )
-    }
-
-    // Pagination
-    const total = filteredProducts.length
-    const totalPages = Math.ceil(total / limit)
-    const startIndex = (page - 1) * limit
-    const endIndex = startIndex + limit
-    const paginatedProducts = filteredProducts.slice(startIndex, endIndex)
-
-    const response: PaginatedResponse<Product> = {
-      data: paginatedProducts,
-      pagination: {
-        page,
-        limit,
-        total,
-        totalPages,
-      },
-    }
-
-    return NextResponse.json(response)
+    // Return paginated response
+    return ApiResponse.paginated(products, pagination)
   } catch (error) {
-    const errorResponse: ApiResponse = {
-      success: false,
-      error: error instanceof Error ? error.message : 'Failed to fetch products',
-    }
-    return NextResponse.json(errorResponse, { status: 500 })
+    return handleApiError(error)
   }
 }
 
-// POST /api/products - Create a new product
+/**
+ * POST /api/products - Create a new product
+ *
+ * Request Body:
+ * {
+ *   name: string (required, 1-200 chars)
+ *   description: string (required, 10-2000 chars)
+ *   sku: string (required, uppercase letters/numbers/hyphens only)
+ *   price: number (required, positive)
+ *   compareAtPrice?: number (optional, must be > price)
+ *   stock: number (required, non-negative integer)
+ *   lowStockThreshold?: number (default: 10)
+ *   category: string (required)
+ *   brand?: string (optional)
+ *   tags?: string[] (default: [])
+ *   images: Array<{url: string, alt: string, isPrimary?: boolean}> (min 1)
+ *   specifications?: Record<string, string> (optional)
+ *   isActive?: boolean (default: true)
+ *   isFeatured?: boolean (default: false)
+ * }
+ */
 export async function POST(request: NextRequest) {
   try {
-    const body: CreateProductRequest = await request.json()
+    // Parse and validate request body
+    const body = await request.json()
+    const validatedData: CreateProductInput = createProductSchema.parse(body)
 
-    // Validation
-    if (!body.name || !body.sku || !body.price) {
-      const errorResponse: ApiResponse = {
-        success: false,
-        error: 'Missing required fields: name, sku, price',
-      }
-      return NextResponse.json(errorResponse, { status: 400 })
-    }
+    // Create product via service
+    const product = await productService.createProduct(validatedData)
 
-    // Check if SKU already exists
-    if (products.some(p => p.sku === body.sku)) {
-      const errorResponse: ApiResponse = {
-        success: false,
-        error: 'Product with this SKU already exists',
-      }
-      return NextResponse.json(errorResponse, { status: 409 })
-    }
-
-    const newProduct: Product = {
-      id: String(Date.now()),
-      name: body.name,
-      description: body.description,
-      sku: body.sku,
-      price: body.price,
-      compareAtPrice: body.compareAtPrice,
-      category: body.category,
-      subcategory: body.subcategory,
-      brand: body.brand,
-      images: body.images || [],
-      stock: body.stock || 0,
-      lowStockThreshold: body.lowStockThreshold || 10,
-      status: 'active',
-      variants: body.variants?.map((v, i) => ({
-        ...v,
-        id: `${Date.now()}-${i}`,
-      })),
-      tags: body.tags || [],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    }
-
-    products.push(newProduct)
-
-    const response: ApiResponse<Product> = {
-      success: true,
-      data: newProduct,
-      message: 'Product created successfully',
-    }
-
-    return NextResponse.json(response, { status: 201 })
+    // Return success response
+    return ApiResponse.created(product, 'Product created successfully')
   } catch (error) {
-    const errorResponse: ApiResponse = {
-      success: false,
-      error: error instanceof Error ? error.message : 'Failed to create product',
-    }
-    return NextResponse.json(errorResponse, { status: 500 })
+    return handleApiError(error)
   }
 }
