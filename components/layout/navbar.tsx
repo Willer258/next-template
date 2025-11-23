@@ -26,6 +26,7 @@ import {
 import { useState } from 'react'
 import { ThemeToggle } from './theme-toggle'
 import { LanguageSwitcher } from './language-switcher'
+import { ThemeCustomizer } from '@/components/theme/theme-customizer'
 
 export function Navbar() {
   const [cartItems, setCartItems] = useState(3)
@@ -200,6 +201,7 @@ export function Navbar() {
           </motion.div>
 
           <LanguageSwitcher />
+          <ThemeCustomizer />
           <ThemeToggle />
 
           {/* Login/User Menu */}
