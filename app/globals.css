@@ -98,14 +98,34 @@
 
   /* Smooth transitions for theme changes */
   html {
-    transition: color-scheme 0.3s;
+    transition: background-color 0.2s ease, color 0.2s ease;
   }
 
-  body,
-  [data-theme] {
-    transition:
-      background-color 0.3s,
-      color 0.3s,
-      border-color 0.3s;
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: oklch(var(--muted) / 0.3);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: oklch(var(--muted-foreground) / 0.3);
+    border-radius: 0.5rem;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: oklch(var(--muted-foreground) / 0.5);
+  }
+
+  /* Fix for Geist font loading */
+  .font-sans {
+    font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  }
+
+  .font-mono {
+    font-family: var(--font-geist-mono), ui-monospace, monospace;
   }
 }

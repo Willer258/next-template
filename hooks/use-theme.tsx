@@ -6,7 +6,7 @@ import { themes, type ThemeName, type ThemeMode } from '@/lib/themes'
 type ThemeProviderProps = {
   children: React.ReactNode
   defaultTheme?: ThemeName
-  defaultMode?: ThemeMode
+  defaultMode?: ThemeMode | 'system'
   storageKey?: string
 }
 
@@ -14,7 +14,7 @@ type ThemeProviderState = {
   theme: ThemeName
   mode: ThemeMode
   setTheme: (theme: ThemeName) => void
-  setMode: (mode: ThemeMode) => void
+  setMode: (mode: ThemeMode | 'system') => void
   toggleMode: () => void
 }
 
@@ -31,33 +31,53 @@ const ThemeProviderContext = React.createContext<ThemeProviderState>(initialStat
 export function ThemeProvider({
   children,
   defaultTheme = 'default',
-  defaultMode = 'light',
+  defaultMode = 'system',
   storageKey = 'ui-theme',
   ...props
 }: ThemeProviderProps) {
-  const [theme, setTheme] = React.useState<ThemeName>(defaultTheme)
-  const [mode, setMode] = React.useState<ThemeMode>(defaultMode)
+  const [theme, setThemeState] = React.useState<ThemeName>(defaultTheme)
+  const [mode, setModeState] = React.useState<ThemeMode>(() => {
+    // Server-side rendering: return light as default to avoid hydration mismatch
+    if (typeof window === 'undefined') return 'light'
 
-  React.useEffect(() => {
-    const root = window.document.documentElement
-
-    // Load saved theme and mode from localStorage
-    const savedTheme = localStorage.getItem(storageKey) as ThemeName
-    const savedMode = localStorage.getItem(`${storageKey}-mode`) as ThemeMode
-
-    if (savedTheme && themes[savedTheme]) {
-      setTheme(savedTheme)
+    // Check if we have a saved mode
+    const savedMode = localStorage.getItem(`${storageKey}-mode`)
+    if (savedMode === 'light' || savedMode === 'dark') {
+      return savedMode
     }
 
-    if (savedMode) {
-      setMode(savedMode)
-    } else {
-      // Check system preference
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-      setMode(prefersDark ? 'dark' : 'light')
+    // Check system preference
+    if (defaultMode === 'system' || defaultMode === undefined) {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+    }
+
+    return defaultMode
+  })
+
+  // Initialize theme from localStorage
+  React.useEffect(() => {
+    const savedTheme = localStorage.getItem(storageKey) as ThemeName
+    if (savedTheme && themes[savedTheme]) {
+      setThemeState(savedTheme)
     }
   }, [storageKey])
 
+  // Listen to system theme changes
+  React.useEffect(() => {
+    const savedMode = localStorage.getItem(`${storageKey}-mode`)
+    if (savedMode !== 'light' && savedMode !== 'dark') {
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+
+      const handleChange = (e: MediaQueryListEvent) => {
+        setModeState(e.matches ? 'dark' : 'light')
+      }
+
+      mediaQuery.addEventListener('change', handleChange)
+      return () => mediaQuery.removeEventListener('change', handleChange)
+    }
+  }, [storageKey])
+
+  // Apply theme and mode
   React.useEffect(() => {
     const root = window.document.documentElement
 
@@ -80,19 +100,29 @@ export function ThemeProvider({
     localStorage.setItem(`${storageKey}-mode`, mode)
   }, [theme, mode, storageKey])
 
+  const setTheme = React.useCallback((newTheme: ThemeName) => {
+    setThemeState(newTheme)
+  }, [])
+
+  const setMode = React.useCallback((newMode: ThemeMode | 'system') => {
+    if (newMode === 'system') {
+      const systemMode = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+      setModeState(systemMode)
+      localStorage.removeItem(`${storageKey}-mode`)
+    } else {
+      setModeState(newMode)
+    }
+  }, [storageKey])
+
   const toggleMode = React.useCallback(() => {
-    setMode(prevMode => prevMode === 'light' ? 'dark' : 'light')
+    setModeState(prevMode => prevMode === 'light' ? 'dark' : 'light')
   }, [])
 
   const value = {
     theme,
     mode,
-    setTheme: (newTheme: ThemeName) => {
-      setTheme(newTheme)
-    },
-    setMode: (newMode: ThemeMode) => {
-      setMode(newMode)
-    },
+    setTheme,
+    setMode,
     toggleMode,
   }
 

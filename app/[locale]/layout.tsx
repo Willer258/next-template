@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import { NextIntlClientProvider } from 'next-intl'
 import { getMessages } from 'next-intl/server'
 import { ThemeProvider } from '@/hooks/use-theme'
+import { GeistSans } from 'geist/font/sans'
+import { GeistMono } from 'geist/font/mono'
 import '../globals.css'
 
 export const metadata: Metadata = {
@@ -20,10 +22,10 @@ export default async function RootLayout({
   const messages = await getMessages()
 
   return (
-    <html lang={locale} suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning className={`${GeistSans.variable} ${GeistMono.variable}`}>
       <body className="font-sans antialiased">
         <NextIntlClientProvider messages={messages}>
-          <ThemeProvider defaultTheme="default" defaultMode="light" storageKey="ui-theme">
+          <ThemeProvider defaultTheme="default" defaultMode="system" storageKey="ui-theme">
             {children}
           </ThemeProvider>
         </NextIntlClientProvider>
